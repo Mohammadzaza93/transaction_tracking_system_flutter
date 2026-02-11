@@ -4,27 +4,31 @@ import 'package:dio/dio.dart';
 import 'package:transactiontrackingsystemflutter/core/network/api_service.dart';
 
 class HomeController extends GetxController {
-  // استخدام الـ dio المعرف في الـ ApiService
   final Dio _dio = ApiService.dio;
 
+  // تعريف المتغيرات التي كانت ناقصة
   var isLoading = false.obs;
-  var transactions = [].obs;
+  var transactions = <dynamic>[].obs; // RxList
+  var stats = <String, dynamic>{}.obs; // RxMap للإحصائيات
+  var selectedStatus = 0.obs; // متغير حالة الفلترة (0 = الكل)
 
   @override
   void onInit() {
     super.onInit();
     fetchTransactions();
+    fetchStats(); // جلب الإحصائيات عند التشغيل
   }
 
   // جلب المعاملات
   Future<void> fetchTransactions() async {
     try {
       isLoading.value = true;
-      // سيقوم الـ Interceptor تلقائياً بإضافة الـ Token هنا
-      final response = await _dio.get("/transactions");
+      final response = await _dio.get("/user/transactions");
 
       if (response.statusCode == 200) {
-        transactions.assignAll(response.data); // تحديث القائمة بكفاءة
+        // لتجنب خطأ assignAll، نتأكد من تحويل البيانات إلى List
+        List<dynamic> data = response.data;
+        transactions.assignAll(data);
       }
     } on DioException catch (e) {
       _handleError(e);
@@ -33,30 +37,36 @@ class HomeController extends GetxController {
     }
   }
 
-  // إضافة معاملة جديدة
-  // إضافة معاملة جديدة - النسخة المصححة
-  // داخل HomeController.dart
+  // جلب الإحصائيات (جديد)
+  Future<void> fetchStats() async {
+    try {
+      final response = await _dio.get("/user-stats");
+      if (response.statusCode == 200) {
+        stats.value = response.data;
+      }
+    } catch (e) {
+      print("Error fetching stats: $e");
+    }
+  }
 
+  // إضافة معاملة جديدة
   Future<void> addTransaction(String type, String reason) async {
     try {
       isLoading.value = true;
-
-      // إرسال البيانات للسيرفر
       final response = await _dio.post("/transactions", data: {
-        "transaction_type": type, // الحقل المطلوب في قاعدة البيانات
-        "reason": reason,         // الحقل المطلوب في قاعدة البيانات
+        "transaction_type": type,
+        "reason": reason,
       });
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        Get.back(); // إغلاق النافذة بعد النجاح
-        fetchTransactions(); // تحديث القائمة فوراً
+        Get.back(); // إغلاق الدايلوج
+        fetchTransactions(); // تحديث القائمة
+        fetchStats(); // تحديث الأرقام العلوية
         Get.snackbar("تم الإرسال", "معاملتك الآن قيد الدراسة",
             backgroundColor: Colors.green, colorText: Colors.white);
       }
     } on DioException catch (e) {
-      // طباعة الخطأ لمعرفة ما إذا كان السيرفر لا يزال يرفض شيئاً ما
-      print("Server Error: ${e.response?.data}");
-      Get.snackbar("خطأ", "فشل إرسال المعاملة، حاول مجدداً");
+      _handleError(e);
     } finally {
       isLoading.value = false;
     }
