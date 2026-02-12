@@ -307,5 +307,80 @@ class CitizenHomeScreen extends StatelessWidget {
   Widget _statCard(String title, String count, Color color, IconData icon) { return Expanded(child: Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, color: color, size: 28), const SizedBox(height: 15), Text(count, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)), Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 12))]))); }
   Widget _buildTypeIcon(String? type) { IconData icon = Icons.article_outlined; if (type == "تجديد هوية") icon = Icons.badge_outlined; if (type == "بيان ولادة") icon = Icons.child_care_rounded; return Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFF0D47A1).withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: const Color(0xFF0D47A1))); }
   Widget _buildEmptyState() { return Center(child: Padding(padding: const EdgeInsets.symmetric(vertical: 40), child: Column(children: [Icon(Icons.cloud_off_outlined, size: 60, color: Colors.grey[300]), const SizedBox(height: 10), Text("لا توجد معاملات حالياً", style: TextStyle(color: Colors.grey[400]))]))); }
-  void _showAddTransactionDialog(BuildContext context, HomeController controller) { /* نفس كود الـ BottomSheet السابق */ }
-}
+  void _showAddTransactionDialog(BuildContext context, HomeController controller) {
+    String selectedType = "بيان عائلي";
+    final reasonController = TextEditingController();
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(25),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "تقديم معاملة جديدة",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 25),
+
+              // اختيار نوع المعاملة
+              DropdownButtonFormField<String>(
+                value: selectedType,
+                decoration: InputDecoration(
+                  labelText: "نوع المعاملة",
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                  prefixIcon: const Icon(Icons.category_outlined),
+                ),
+                items: ["بيان عائلي", "تجديد هوية", "بيان ولادة", "جواز سفر"]
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+                onChanged: (val) => selectedType = val!,
+              ),
+              const SizedBox(height: 20),
+
+              // حقل سبب الطلب
+              TextField(
+                controller: reasonController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: "تفاصيل أو سبب الطلب",
+                  hintText: "اكتب هنا تفاصيل إضافية للمعاملة...",
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // زر الإرسال مع حالة التحميل
+              Obx(() => SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D47A1),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () => controller.addTransaction(selectedType, reasonController.text),
+                  child: controller.isLoading.value
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("إرسال الطلب الآن",
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              )),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }}
