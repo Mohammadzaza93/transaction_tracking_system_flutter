@@ -10,9 +10,11 @@ class QuickStatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _statCard("إجمالي الطلبات", "$total", Colors.blue, Icons.list_alt_rounded),
+        _statCard(
+            "إجمالي الطلبات", "$total", Colors.blue, Icons.list_alt_rounded),
         const SizedBox(width: 15),
-        _statCard("قيد المعالجة", "$pending", Colors.orange, Icons.hourglass_empty_rounded),
+        _statCard("قيد المعالجة", "$pending", Colors.orange,
+            Icons.hourglass_empty_rounded),
       ],
     );
   }
@@ -24,15 +26,20 @@ class QuickStatsRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)],
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: color, size: 28),
             const SizedBox(height: 15),
-            Text(count, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+            Text(count,
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text(title,
+                style: TextStyle(color: Colors.grey[600], fontSize: 12)),
           ],
         ),
       ),
