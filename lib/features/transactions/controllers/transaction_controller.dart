@@ -35,10 +35,11 @@ class TransactionController extends GetxController {
     }
   }
 
-  Future<void> addTransaction(String type, String reason) async {
+  Future<void> addTransaction(String type, String reason, int copies) async {
     try {
       isLoading.value = true;
-      await _repository.createTransaction(type, reason);
+      // تمرير الـ copies للمستودع (Repository)
+      await _repository.createTransaction(type, reason, copies);
       Get.back();
       refreshData();
       Get.snackbar("نجاح", "تم إرسال الطلب بنجاح");

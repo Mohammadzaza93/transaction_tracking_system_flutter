@@ -15,7 +15,7 @@ class TransactionRepository {
     return response.data as Map<String, dynamic>;
   }
 
-  Future<void> createTransaction(String type, String reason) async {
-    await _service.addTransaction(type, reason);
+  Future<void> createTransaction(String type, String reason, int copies) async {
+    await _service.addTransaction(type, reason, copies);
   }
 }
