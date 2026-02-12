@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:transactiontrackingsystemflutter/features/auth/controllers/auth_controller.dart';
 import '../controllers/home_controller.dart';
 
 class CitizenHomeScreen extends StatelessWidget {
@@ -213,9 +214,88 @@ class CitizenHomeScreen extends StatelessWidget {
       child: Text(statusName ?? "قيد الدراسة", style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
     );
   }
+  void _showSettingsSheet() {
+    final authController = Get.find<AuthController>();
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(25),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "الإعدادات",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+
+            _settingsTile(
+              icon: Icons.person,
+              title: "الملف الشخصي",
+              onTap: () {},
+            ),
+
+            _settingsTile(
+              icon: Icons.language,
+              title: "اللغة",
+              onTap: () {},
+            ),
+
+            _settingsTile(
+              icon: Icons.logout,
+              title: "تسجيل الخروج",
+              color: Colors.red,
+              onTap: () {
+                final auth = Get.find<AuthController>();
+                auth.logout();
+              },
+            ),
+
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _settingsTile({
+    required IconData icon,
+    required String title,
+    Color color = Colors.black87,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(title, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: onTap,
+    );
+  }
 
   // --- الدوال المساعدة السابقة (تظل كما هي) ---
-  Widget _buildSliverAppBar() { /* نفس الكود السابق */ return SliverAppBar(expandedHeight: 180, pinned: true, backgroundColor: const Color(0xFF0D47A1), flexibleSpace: FlexibleSpaceBar(title: const Text("لوحة التحكم"), background: Container(decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF0D47A1), Color(0xFF1976D2)]))))); }
+  Widget _buildSliverAppBar() {
+    return SliverAppBar(
+      expandedHeight: 120,
+      pinned: true,
+      backgroundColor: const Color(0xFF0D47A1),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings, color: Colors.white),
+          onPressed: () => _showSettingsSheet(),
+        ),
+      ],
+      flexibleSpace: const FlexibleSpaceBar(
+        title: Text("لوحة التحكم"),
+      ),
+    );
+  }
   Widget _buildSectionTitle(String title) { return Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A237E))); }
   Widget _buildQuickStats(int total, int pending) { return Row(children: [_statCard("إجمالي الطلبات", "$total", Colors.blue, Icons.list_alt_rounded), const SizedBox(width: 15), _statCard("قيد المعالجة", "$pending", Colors.orange, Icons.hourglass_empty_rounded)]); }
   Widget _statCard(String title, String count, Color color, IconData icon) { return Expanded(child: Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, color: color, size: 28), const SizedBox(height: 15), Text(count, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)), Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 12))]))); }

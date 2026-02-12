@@ -6,6 +6,17 @@ import '../services/auth_service.dart';
 class AuthBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(AuthController(AuthRepository(AuthService())));
+    // Service
+    Get.lazyPut<AuthService>(() => AuthService());
+
+    // Repository
+    Get.lazyPut<AuthRepository>(
+            () => AuthRepository(Get.find<AuthService>())
+    );
+
+    // Controller
+    Get.lazyPut<AuthController>(
+            () => AuthController(Get.find<AuthRepository>())
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:transactiontrackingsystemflutter/features/home/bindings/home_binding.dart';
 import 'package:transactiontrackingsystemflutter/features/home/screens/citizen_home_screen.dart';
 import 'package:transactiontrackingsystemflutter/features/home/screens/clerk_home_screen.dart';
 import 'package:transactiontrackingsystemflutter/features/home/screens/supervisor_home_screen.dart';
@@ -36,7 +37,9 @@ class AppPages {
     GetPage(
       name: AppRoutes.citizenHome,
       page: () => CitizenHomeScreen(),
+      binding: HomeBinding(),
     ),
+
 
     GetPage(
       name: AppRoutes.clerkHome,
