@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:transactiontrackingsystemflutter/features/auth/controllers/auth_controller.dart';
+import 'package:transactiontrackingsystemflutter/features/transactions/controllers/transaction_controller.dart';
 import '../controllers/home_controller.dart';
 
 class CitizenHomeScreen extends StatelessWidget {
@@ -8,7 +9,7 @@ class CitizenHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
+    final TransactionController controller = Get.find<TransactionController>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FD),
@@ -75,7 +76,7 @@ class CitizenHomeScreen extends StatelessWidget {
   }
 
   // --- شريط التصنيفات (Filter Bar) ---
-  Widget _buildFilterBar(HomeController controller) {
+  Widget _buildFilterBar(TransactionController controller) {
     final statuses = [
       {'id': 0, 'label': 'الكل', 'icon': Icons.all_inclusive},
       {'id': 1, 'label': 'قيد الدراسة', 'icon': Icons.hourglass_bottom},
@@ -307,7 +308,7 @@ class CitizenHomeScreen extends StatelessWidget {
   Widget _statCard(String title, String count, Color color, IconData icon) { return Expanded(child: Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, color: color, size: 28), const SizedBox(height: 15), Text(count, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)), Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 12))]))); }
   Widget _buildTypeIcon(String? type) { IconData icon = Icons.article_outlined; if (type == "تجديد هوية") icon = Icons.badge_outlined; if (type == "بيان ولادة") icon = Icons.child_care_rounded; return Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFF0D47A1).withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: const Color(0xFF0D47A1))); }
   Widget _buildEmptyState() { return Center(child: Padding(padding: const EdgeInsets.symmetric(vertical: 40), child: Column(children: [Icon(Icons.cloud_off_outlined, size: 60, color: Colors.grey[300]), const SizedBox(height: 10), Text("لا توجد معاملات حالياً", style: TextStyle(color: Colors.grey[400]))]))); }
-  void _showAddTransactionDialog(BuildContext context, HomeController controller) {
+  void _showAddTransactionDialog(BuildContext context, TransactionController controller) {
     String selectedType = "بيان عائلي";
     final reasonController = TextEditingController();
 

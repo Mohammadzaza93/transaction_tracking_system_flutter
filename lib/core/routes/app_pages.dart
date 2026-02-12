@@ -3,6 +3,7 @@ import 'package:transactiontrackingsystemflutter/features/home/bindings/home_bin
 import 'package:transactiontrackingsystemflutter/features/home/screens/citizen_home_screen.dart';
 import 'package:transactiontrackingsystemflutter/features/home/screens/clerk_home_screen.dart';
 import 'package:transactiontrackingsystemflutter/features/home/screens/supervisor_home_screen.dart';
+import 'package:transactiontrackingsystemflutter/features/transactions/bindings/transaction_binding.dart';
 
 import '../../features/auth/bindings/auth_binding.dart';
 import '../../features/auth/screens/login_screen.dart';
@@ -36,8 +37,11 @@ class AppPages {
 
     GetPage(
       name: AppRoutes.citizenHome,
-      page: () => CitizenHomeScreen(),
-      binding: HomeBinding(),
+      page: () => const CitizenHomeScreen(),
+      bindings: [
+        AuthBinding(),
+        TransactionBinding(),
+      ],
     ),
 
 
