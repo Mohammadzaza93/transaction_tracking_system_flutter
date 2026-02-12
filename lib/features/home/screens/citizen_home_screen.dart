@@ -135,13 +135,32 @@ class CitizenHomeScreen extends StatelessWidget {
             _detailRow(Icons.category, "النوع", t['transaction_type']),
             _detailRow(Icons.calendar_today, "تاريخ التقديم", t['created_at']?.split('T')[0]),
             const SizedBox(height: 20),
-            const Text("ملاحظات وتحديثات الموظف:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+            const Text(
+                "ملاحظات وتحديثات الموظف:",
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)
+            ),
             const SizedBox(height: 10),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-              child: Text(t['reason'] ?? "لا توجد ملاحظات من الموظف حتى الآن. المعاملة قيد التدقيق."),
+              decoration: BoxDecoration(
+                // تغيير اللون ليكون أخضر فاتح إذا كانت مقبولة، ورمادي إذا كانت قيد التدقيق
+                color: t['transaction_status_id'] == 4 ? Colors.green[50] : Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: t['transaction_status_id'] == 4 ? Colors.green[200]! : Colors.grey[300]!
+                ),
+              ),
+              child: Text(
+                // هنا نستخدم الحقل الجديد admin_notes
+                t['notes'] != null && t['notes'].toString().isNotEmpty
+                    ? t['notes']
+                    : "المعاملة قيد التدقيق، سيقوم الموظف بإضافة الملاحظات فور انتهائه.",
+                style: TextStyle(
+                  color: t['transaction_status_id'] == 4 ? Colors.green[900] : Colors.black87,
+                  fontStyle: t['notes'] == null ? FontStyle.italic : FontStyle.normal,
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             SizedBox(width: double.infinity, child: ElevatedButton(onPressed: () => Get.back(), child: const Text("إغلاق"))),
@@ -237,18 +256,6 @@ class CitizenHomeScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             _settingsTile(
-              icon: Icons.person,
-              title: "الملف الشخصي",
-              onTap: () {},
-            ),
-
-            _settingsTile(
-              icon: Icons.language,
-              title: "اللغة",
-              onTap: () {},
-            ),
-
-            _settingsTile(
               icon: Icons.logout,
               title: "تسجيل الخروج",
               color: Colors.red,
@@ -257,7 +264,6 @@ class CitizenHomeScreen extends StatelessWidget {
                 auth.logout();
               },
             ),
-
             const SizedBox(height: 10),
           ],
         ),
