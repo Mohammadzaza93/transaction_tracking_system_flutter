@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:transactiontrackingsystemflutter/features/home/Widgets/add_transaction_sheet.dart%20%20Dart.dart';
 import 'package:transactiontrackingsystemflutter/features/home/Widgets/transaction_list_item.dart';
+import 'package:transactiontrackingsystemflutter/features/notifications/controllers/notification_controller.dart';
+import 'package:transactiontrackingsystemflutter/features/notifications/screens/notification_screen.dart';
 import '../Widgets/quick_stats_row.dart';
 import '../Widgets/transaction_filter_bar.dart';
 import '../../transactions/controllers/transaction_controller.dart';
@@ -94,17 +96,48 @@ class CitizenHomeScreen extends GetView<TransactionController> {
   }
 
   Widget _buildSliverAppBar() {
+    // استدعاء الكنترولر الخاص بالإشعارات
+    final notificationController = Get.find<NotificationController>();
+
     return SliverAppBar(
       expandedHeight: 120,
       pinned: true,
       backgroundColor: const Color(0xFF0D47A1),
       actions: [
+        // زر الإشعارات مع الشارة (Badge)
+        Obx(() => Stack(
+          alignment: Alignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.notifications_none_rounded, color: Colors.white, size: 28),
+                onPressed: () => Get.toNamed('/notifications'), // الانتقال لصفحة الإشعارات
+            ),
+            if (notificationController.unreadCount.value > 0)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  child: Text(
+                    '${notificationController.unreadCount.value}',
+                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        )),
         IconButton(
           icon: const Icon(Icons.settings, color: Colors.white),
           onPressed: () => Get.bottomSheet(const SettingsSheet()),
         ),
       ],
-      flexibleSpace: const FlexibleSpaceBar(title: Text("لوحة التحكم")),
+      flexibleSpace: const FlexibleSpaceBar(
+        title: Text("لوحة التحكم", style: TextStyle(fontWeight: FontWeight.bold)),
+        titlePadding: EdgeInsetsDirectional.only(start: 16, bottom: 16),
+      ),
     );
   }
 

@@ -15,5 +15,6 @@ abstract class AppRoutes  {
   static const uploaddocument = '/documents/upload';
 
   static const profile = '/profile';
+  static const notifications = '/notifications';
   static const settings = '/settings';
 }
