@@ -56,11 +56,11 @@ class TransactionController extends GetxController {
   }
 
   Future<void> updateTransaction(
-      int id, String type, String reason, int copies) async {
+      int id, String type, int copies) async {
     try {
       isLoading.value = true;
 
-      await _repository.updateTransaction(id, type, reason, copies);
+      await _repository.updateTransaction(id, type, copies);
 
       Get.back();
       refreshData();

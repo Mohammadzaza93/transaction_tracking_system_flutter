@@ -12,10 +12,9 @@ class TransactionService {
 
   // تعديل معاملة
   Future<Response> updateTransaction(
-      int id, String type, String reason, int copies) {
+      int id, String type, int copies) {
     return _dio.put("/transactions/$id", data: {
       "transaction_type": type,
-      "reason": reason,
       "copies_count": copies,
     });
   }

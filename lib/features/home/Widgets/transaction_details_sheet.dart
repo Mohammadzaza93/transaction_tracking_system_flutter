@@ -87,13 +87,7 @@ class TransactionDetailsSheet extends StatelessWidget {
                           style: TextStyle(
                               color: Colors.white)),
                       onPressed: () {
-                        Get.back();
-                        controller.updateTransaction(
-                          t['id'],
-                          t['transaction_type'],
-                          t['reason'],
-                          t['copies_count'],
-                        );
+                        _showEditDialog(controller, t);
                       },
                     ),
                   ),
@@ -148,6 +142,142 @@ class TransactionDetailsSheet extends StatelessWidget {
       ),
     );
   }
+
+  void _showEditDialog(
+      TransactionController controller, dynamic t) {
+
+    final copiesController =
+    TextEditingController(text: t['copies_count'].toString());
+
+    final RxString selectedType =
+        (t['transaction_type'] as String).obs;
+
+    final List<String> transactionTypes = [
+      "بيان قيد",
+      "بيان عائلي",
+      "إخراج قيد",
+      "شهادة ميلاد",
+      "شهادة وفاة",
+      "صورة قيد فردي",
+    ];
+
+
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+              const Text(
+                "تعديل المعاملة",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// نوع المعاملة (Dropdown)
+              Obx(() => DropdownButtonFormField<String>(
+                value: selectedType.value,
+                items: transactionTypes
+                    .map((type) => DropdownMenuItem(
+                  value: type,
+                  child: Text(type),
+                ))
+                    .toList(),
+                decoration: InputDecoration(
+                  labelText: "نوع المعاملة",
+                  border: OutlineInputBorder(
+                    borderRadius:
+                    BorderRadius.circular(12),
+                  ),
+                ),
+                onChanged: (value) {
+                  if (value != null) {
+                    selectedType.value = value;
+                  }
+                },
+              )),
+
+              const SizedBox(height: 20),
+
+              /// عدد النسخ
+              TextField(
+                controller: copiesController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "عدد النسخ",
+                  border: OutlineInputBorder(
+                    borderRadius:
+                    BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              Row(
+                children: [
+
+                  /// زر حفظ
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                        const Color(0xFF0D47A1),
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(12)),
+                      ),
+                      onPressed: () {
+
+                        int copies =
+                            int.tryParse(copiesController.text) ?? 0;
+
+                        if (copies <= 0) {
+                          Get.snackbar("خطأ",
+                              "عدد النسخ يجب أن يكون أكبر من صفر");
+                          return;
+                        }
+
+                        controller.updateTransaction(
+                          t['id'],
+                          selectedType.value,
+                          copies,
+                        );
+
+                        Get.back(); // اغلاق dialog
+                        Get.back(); // اغلاق bottom sheet
+                      },
+                      child: const Text("حفظ",
+                          style: TextStyle(
+                              color: Colors.white)),
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  /// زر إلغاء
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      child: const Text("إلغاء"),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 
   /// Dialog تأكيد الحذف
   void _confirmDelete(
