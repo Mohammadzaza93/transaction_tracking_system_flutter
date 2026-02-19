@@ -54,4 +54,39 @@ class TransactionController extends GetxController {
     String msg = e.response?.data['message'] ?? "خطأ في الاتصال";
     Get.snackbar("تنبيه", msg, snackPosition: SnackPosition.BOTTOM);
   }
+
+  Future<void> updateTransaction(
+      int id, String type, String reason, int copies) async {
+    try {
+      isLoading.value = true;
+
+      await _repository.updateTransaction(id, type, reason, copies);
+
+      Get.back();
+      refreshData();
+
+      Get.snackbar("نجاح", "تم تعديل المعاملة بنجاح");
+    } on DioException catch (e) {
+      _handleError(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> deleteTransaction(int id) async {
+    try {
+      isLoading.value = true;
+
+      await _repository.deleteTransaction(id);
+
+      refreshData();
+
+      Get.snackbar("نجاح", "تم حذف المعاملة بنجاح");
+    } on DioException catch (e) {
+      _handleError(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
 }

@@ -18,4 +18,14 @@ class TransactionRepository {
   Future<void> createTransaction(String type, String reason, int copies) async {
     await _service.addTransaction(type, reason, copies);
   }
+
+  Future<void> updateTransaction(
+      int id, String type, String reason, int copies) async {
+    await _service.updateTransaction(id, type, reason, copies);
+  }
+
+  Future<void> deleteTransaction(int id) async {
+    await _service.deleteTransaction(id);
+  }
+
 }
