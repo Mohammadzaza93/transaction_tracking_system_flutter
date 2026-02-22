@@ -15,6 +15,7 @@ class TransactionFilterBar extends StatelessWidget {
       {'id': 3, 'label': 'نواقص'},
       {'id': 4, 'label': 'مقبولة'},
       {'id': 5, 'label': 'مرفوضة'},
+      {'id': 6, 'label': 'منتهية'},
     ];
 
     return SizedBox(
