@@ -126,10 +126,25 @@ class AuthController extends GetxController {
 
   // LOGOUT
   Future logout() async {
-    await repo.logout();
+    try {
+      loading.value = true;
 
-     storage.clear();
+      // 1. إعلام السيرفر بتعطيل التوكن
+      await repo.logout();
 
-    Get.offAllNamed('/login');
+      // 2. مسح البيانات المحلية (Token, User Info)
+      await storage.clear();
+
+      // 3. التوجيه لصفحة تسجيل الدخول ومسح التاريخ
+      Get.offAllNamed('/login');
+
+    } catch (e) {
+      // حتى لو فشل السيرفر، يجب مسح التخزين المحلي وتسجيل الخروج
+      await storage.clear();
+      Get.offAllNamed('/login');
+      print("Logout Error: $e");
+    } finally {
+      loading.value = false;
+    }
   }
 }
