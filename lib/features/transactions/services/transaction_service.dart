@@ -29,6 +29,6 @@ class TransactionService {
       _dio.post("/transactions", data: {
         "transaction_type": type,
         "reason": reason,
-        "copies_count": copies, // المفتاح الذي ينتظره الـ Backend
+        "copies_count": copies,
       });
 }

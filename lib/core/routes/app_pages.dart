@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:transactiontrackingsystemflutter/features/documents/bindings/document_binding.dart';
+import 'package:transactiontrackingsystemflutter/features/documents/screens/upload_document_screen.dart';
 import 'package:transactiontrackingsystemflutter/features/home/bindings/home_binding.dart';
 import 'package:transactiontrackingsystemflutter/features/home/screens/citizen_home_screen.dart';
 import 'package:transactiontrackingsystemflutter/features/home/screens/clerk_home_screen.dart';
@@ -23,6 +25,16 @@ class AppPages {
     GetPage(
       name: AppRoutes.splash,
       page: () => SplashScreen(),
+    ),
+
+    GetPage(
+      name: AppRoutes.uploaddocument,
+      page: () {
+        // نستقبل الـ ID الممرر عبر الوسائط (Arguments)
+        final int transactionId = Get.arguments;
+        return UploadDocumentsScreen(transactionId: transactionId);
+      },
+      binding: DocumentBinding(), // هذا سيحل مشكلة "Not Found" نهائياً
     ),
 
     GetPage(

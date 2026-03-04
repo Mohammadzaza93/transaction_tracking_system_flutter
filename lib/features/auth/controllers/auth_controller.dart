@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';
 import '../repositories/auth_repository.dart';
 import '../../../core/services/storage_service.dart';
+import 'package:dio/dio.dart';
 
 class AuthController extends GetxController {
   final AuthRepository repo;
@@ -34,11 +36,37 @@ class AuthController extends GetxController {
         "role_id": roleId,
       });
 
-      Get.snackbar("نجاح", "تم إنشاء الحساب بنجاح");
+      // عرض رسالة النجاح التي أرسلها السيرفر
+      Get.snackbar("نجاح", "تم إنشاء الحساب بنجاح ✅",
+          backgroundColor: Colors.green,
+          colorText: Colors.white
+      );
+
       Get.offAllNamed('/login');
 
     } catch (e) {
-      Get.snackbar("خطأ", "فشل إنشاء الحساب");
+      String errorMessage = "فشل إنشاء الحساب، يرجى المحاولة لاحقاً";
+
+      // التحقق من وجود خطأ قادم من Dio (Laravel Validation Errors)
+      if (e.toString().contains('422')) {
+        final response = (e as dynamic).response;
+        if (response != null && response.data['errors'] != null) {
+          // استخراج أول خطأ موجود في مصفوفة الأخطاء
+          var errors = response.data['errors'] as Map<String, dynamic>;
+          errorMessage = errors.values.first[0]; // يأخذ أول رسالة خطأ
+        } else if (response != null && response.data['message'] != null) {
+          errorMessage = response.data['message'];
+        }
+      } else if (e.toString().contains('SocketException')) {
+        errorMessage = "تأكد من اتصالك بالإنترنت ومن تشغيل السيرفر";
+      }
+
+      Get.snackbar("خطأ في البيانات", errorMessage,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+          duration: Duration(seconds: 4)
+      );
     } finally {
       loading.value = false;
     }
@@ -54,10 +82,9 @@ class AuthController extends GetxController {
       token.value = data['token'];
       user.value = UserModel.fromJson(data['user']);
 
-       storage.saveToken(token.value);
+      storage.saveToken(token.value);
       await storage.saveUser(data['user']);
 
-      // توجيه حسب الدور
       final role = data['user']['role'];
 
       if (role == "citizen") {
@@ -66,12 +93,32 @@ class AuthController extends GetxController {
         Get.offAllNamed('/clerk-home');
       } else if (role == "supervisor") {
         Get.offAllNamed('/supervisor-home');
-      } else {
-        Get.offAllNamed('/login');
       }
 
     } catch (e) {
-      Get.snackbar("خطأ", "بيانات تسجيل الدخول غير صحيحة");
+      // هنا استخراج رسالة الخطأ من السيرفر
+      String errorMessage = "حدث خطأ ما، يرجى المحاولة لاحقاً";
+
+      if (e is DioException) { // إذا كنت تستخدم Dio
+        if (e.response != null && e.response?.data != null) {
+          // نأخذ حقل 'message' الذي أرسلناه من Laravel
+          errorMessage = e.response?.data['message'] ?? errorMessage;
+        } else {
+          errorMessage = "لا يوجد اتصال بالسيرفر";
+        }
+      } else {
+        errorMessage = e.toString();
+      }
+
+      // عرض الرسالة القادمة من السيرفر فعلياً
+      Get.snackbar(
+        "تنبيه",
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+
     } finally {
       loading.value = false;
     }

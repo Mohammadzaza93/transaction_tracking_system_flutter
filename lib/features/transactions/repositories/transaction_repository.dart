@@ -15,8 +15,10 @@ class TransactionRepository {
     return response.data as Map<String, dynamic>;
   }
 
-  Future<void> createTransaction(String type, String reason, int copies) async {
-    await _service.addTransaction(type, reason, copies);
+  Future<int> createTransaction(String type, String reason, int copies) async {
+    final response = await _service.addTransaction(type, reason, copies);
+    // استخراج الـ ID من رد السيرفر (تأكد أن السيرفر يرسل { "id": 123 })
+    return response.data['id'];
   }
 
   Future<void> updateTransaction(

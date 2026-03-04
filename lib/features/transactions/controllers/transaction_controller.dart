@@ -35,16 +35,18 @@ class TransactionController extends GetxController {
     }
   }
 
-  Future<void> addTransaction(String type, String reason, int copies) async {
+  Future<int?> addTransaction(String type, String reason, int copies) async {
     try {
       isLoading.value = true;
-      // تمرير الـ copies للمستودع (Repository)
-      await _repository.createTransaction(type, reason, copies);
-      Get.back();
+      // استلام الـ ID من المستودع
+      int transactionId = await _repository.createTransaction(type, reason, copies);
+
       refreshData();
-      Get.snackbar("نجاح", "تم إرسال الطلب بنجاح");
+      Get.snackbar("نجاح", "تم إنشاء المعاملة، يرجى رفع الملفات");
+      return transactionId; // إرجاع الـ ID لاستخدامه في الواجهة
     } on DioException catch (e) {
       _handleError(e);
+      return null;
     } finally {
       isLoading.value = false;
     }

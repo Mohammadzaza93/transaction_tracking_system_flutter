@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:transactiontrackingsystemflutter/core/routes/app_routes.dart';
+import 'package:transactiontrackingsystemflutter/features/documents/screens/upload_document_screen.dart';
 import 'package:transactiontrackingsystemflutter/features/transactions/controllers/transaction_controller.dart';
 
 class AddTransactionSheet extends StatefulWidget {
@@ -126,15 +128,35 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                 ),
                 onPressed: widget.controller.isLoading.value
                     ? null
-                    : () => widget.controller.addTransaction(
+                    : () async {
+                  final int? newId = await widget.controller.addTransaction(
                     selectedType,
                     reasonController.text,
-                    copiesCount // نمرر القيمة هنا للـ Controller
-                ),
+                    copiesCount,
+                  );
+
+                  if (newId != null) {
+                    if (Get.isBottomSheetOpen ?? false) Get.back();
+
+                    // الانتقال باستخدام الاسم وتمرير الـ ID كـ Argument
+                    Get.toNamed(
+                      AppRoutes.uploaddocument,
+                      arguments: newId,
+                    );
+                  }
+                },
+                // --- هذا هو الجزء الذي كان ناقصاً في كودك ---
                 child: widget.controller.isLoading.value
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("إرسال الطلب الآن",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    : const Text(
+                  "إرسال الطلب الآن",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16
+                  ),
+                ),
+                // ----------------------------------------
               ),
             )),
           ],
